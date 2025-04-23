@@ -8,26 +8,27 @@ from django.contrib.auth.decorators import login_required
 
 def index(request):
     if request.user.is_authenticated:
-        
-        todos = todo.objects.all()
+        user = request.user
+        todos = todo.objects.filter(user = request.user)
         for i, task in enumerate(todos, start=1):
             task.display_number = i
-        return render(request, 'to_do_app/index.html', {'todos': todos})
+        return render(request, 'to_do_app/index.html', {'todos': todos,'user':user})
     
     return redirect('to_do_auth:singup')
+@login_required
 def add(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-        new_task = todo(title=title)
+        new_task = todo(title=title,user = request.user)
         new_task.save()
     return redirect('to_do:index')
-
+@login_required
 def delete (request,id):
-    todo.objects.get(id=id).delete()
+    todo.objects.get(id=id,user = request.user).delete()
     return redirect('to_do:index')
-
+@login_required
 def update (request,id):
-    to_do_object = get_object_or_404(todo, pk = id)
+    to_do_object = get_object_or_404(todo, pk = id,user = request.user)
     if request.method == 'POST':
         if request.POST.get('isCompleted') == 'on':
             iscompleted =  request.POST.get('isCompleted')
@@ -37,7 +38,8 @@ def update (request,id):
                 to_do_object.isCompleted = True
         else:
              to_do_object.isCompleted = False
-        to_do_object.title = request.POST.get('title')
+        if request.POST.get('title'):
+            to_do_object.title = request.POST.get('title')
 
         to_do_object.save()
             
