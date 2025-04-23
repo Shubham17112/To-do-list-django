@@ -10,13 +10,21 @@ from django.contrib.auth import login
 # Create your views here.
 def login_page(request):
     form = AuthenticationForm()
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.objects.get(username=form.username)
-             
-             
-            login(request, user)
+    print('sthis si login form')
+    try:
+        if request.method == 'POST':
+            print('insise post request',request.POST)
+            form = AuthenticationForm(data=request.POST)
+            print('this si form data',form)
+            if form.is_valid():
+                user = form.get_user()
+                print(user)
+                
+                login(request, user)
+                return redirect('to_do:index')
+    except:
+        print('no post request has been made')
+    
     return render (request,'auth/login.html',{'form':form})
 
 def singup(request):

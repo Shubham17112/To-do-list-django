@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="{%  url 'to_do_auth:login_page'  %}">
+    <form method="post" action="{%  url 'to_do_auth:login_page'  %}">
         {% csrf_token %}
         {{form}}
             <button
